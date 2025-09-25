@@ -66,3 +66,12 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+input {
+    font-size: 1.2em;
+    padding: 0.1em 0.5em;
+    border-radius: 0.3em;
+    border: 2px solid #888;
+    outline: none;
+    transition: border-color 300ms, box-shadow 300ms;
+}
