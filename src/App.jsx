@@ -4,31 +4,47 @@ function ListaTarefas() {
     const [lista, setLista] = useState([]);
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
-    const [addTarefa, setAddTarefa] = useState('');
+    const [novaTarefaTexto, setNovaTarefaTexto] = useState(''); // Nome do estado alterado para evitar conflito
 
-    // A função pode ser chamada de 'handleAdicionar' ou 'adicionarTarefa'
-    const adicionarTarefa = () => {
-        // 1. Verificamos se o input não está vazio
-        if (addTarefa.trim() === '') {
-            return; // Sai da função se o input estiver vazio
+    // Função que lida com o envio do formulário (POST)
+    const handleAdicionarTarefa = async (event) => {
+        // ESSENCIAL: Impede o recarregamento padrão da página ao submeter o formulário
+        event.preventDefault();
+
+        if (novaTarefaTexto.trim() === '') {
+            return;
         }
 
-        // 2. Criamos o objeto da nova tarefa.
-        // Usamos Date.now() para gerar um ID temporário único.
-        const novaTarefa = {
-            id: Date.now(),
-            title: addTarefa,
-            completed: false, // Tarefa nova não está completa
-        };
+        setLoading(true);
 
-        // 3. Criamos um novo array com as tarefas antigas + a nova.
-        const novaLista = [...lista, novaTarefa];
+        try {
+            const response = await fetch('https://jsonplaceholder.typicode.com/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: novaTarefaTexto,
+                    completed: false,
+                    userId: 1,
+                }),
+            });
 
-        // 4. Atualizamos os dois estados.
-        setLista(novaLista); // Atualiza o array de tarefas
-        setAddTarefa(''); // Limpa o campo de input
+            const tarefaCriada = await response.json();
+
+            // Usa o retorno da API (com o ID gerado) para atualizar a lista
+            setLista([tarefaCriada, ...lista]); // Adicionando no topo da lista
+            setNovaTarefaTexto(''); // Limpa o input
+
+        } catch (error) {
+            setErro('Falha ao enviar a tarefa. Tente novamente.');
+            console.error('Erro no POST:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    // Requisição inicial (GET)
     useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/todos')
             .then(response => {
@@ -47,6 +63,8 @@ function ListaTarefas() {
             });
     }, []);
 
+    // --- RENDERIZAÇÃO CONDICIONAL ---
+
     if (loading) {
         return <div>Carregando...</div>;
     }
@@ -55,22 +73,28 @@ function ListaTarefas() {
         return <div>Erro: {erro}</div>;
     }
 
+    // --- FORMULÁRIO E LISTA ---
     return (
         <div>
             <h1>Lista de Tarefas</h1>
+
+            {/* O formulário agora chama a função ao ser submetido */}
+            <form onSubmit={handleAdicionarTarefa}>
+                <h2>Adicionar Nova Tarefa</h2>
+                <input
+                    type="text"
+                    placeholder="Nova Tarefa"
+                    value={novaTarefaTexto}
+                    onChange={e => setNovaTarefaTexto(e.target.value)}
+                />
+                <button type="submit">Adicionar</button>
+            </form>
+
             <ul>
                 {lista.map(tarefa => (
                     <li key={tarefa.id}>{tarefa.title}</li>
                 ))}
             </ul>
-            <h1>Adicionar Nova Tarefa</h1>
-            <input
-                type="text"
-                placeholder="Nova Tarefa"
-                value={addTarefa}
-                onChange={e => setAddTarefa(e.target.value)}
-            />
-            <button onClick={adicionarTarefa}>Adicionar</button>
         </div>
     );
 }
