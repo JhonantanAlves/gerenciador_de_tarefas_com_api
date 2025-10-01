@@ -6,6 +6,23 @@ function ListaTarefas() {
     const [erro, setErro] = useState(null);
     const [novaTarefaTexto, setNovaTarefaTexto] = useState(''); // Nome do estado alterado para evitar conflito
 
+    // Função que lida com a requisição de deletar tarefa usando metodo (DELETE)
+    const handleDeletarTarefa = async (id) => {
+        setLoading(true);
+        try {
+             await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`,{
+                method: 'DELETE',
+             })
+            const novaLista = lista.filter(tarefa => tarefa.id !== id);
+            setLista(novaLista);
+        } catch (error) {
+            setErro('Falha ao deletar a tarefa. Tente novamente.');
+            console.error('Erro no DELETE:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     // Função que lida com o envio do formulário (POST)
     const handleAdicionarTarefa = async (event) => {
         // ESSENCIAL: Impede o recarregamento padrão da página ao submeter o formulário
@@ -78,7 +95,7 @@ function ListaTarefas() {
         <div>
             <h1>Lista de Tarefas</h1>
 
-            {/* O formulário agora chama a função ao ser submetido */}
+            {/* O formulário chama a função ao ser submetido */}
             <form onSubmit={handleAdicionarTarefa}>
                 <h2>Adicionar Nova Tarefa</h2>
                 <input
@@ -92,7 +109,12 @@ function ListaTarefas() {
 
             <ul>
                 {lista.map(tarefa => (
-                    <li key={tarefa.id}>{tarefa.title}</li>
+                    <li key={tarefa.id}>{tarefa.title}
+                        {/* Adicionando botão de deletar tarefa */}
+                    <button onClick={ () => handleDeletarTarefa(tarefa.id) }>
+                        [x]
+                    </button>
+                    </li>
                 ))}
             </ul>
         </div>
