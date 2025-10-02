@@ -5,6 +5,9 @@ function ListaTarefas() {
     const [loading, setLoading] = useState(true);
     const [erro, setErro] = useState(null);
     const [novaTarefaTexto, setNovaTarefaTexto] = useState(''); // Nome do estado alterado para evitar conflito
+    const [tarefaEditandoId, setTarefaEditandoId] = useState(null); // Estado para controlar qual tarefa está sendo editada
+    const [salvarTarefaEditada, setSalvarTarefaEditada] = useState(''); // Estado para o texto da tarefa editada
+
 
     // Função que lida com a requisição de deletar tarefa usando metodo (DELETE)
     const handleDeletarTarefa = async (id) => {
@@ -108,12 +111,26 @@ function ListaTarefas() {
             </form>
 
             <ul>
+                {/* Mapeia a lista de tarefas, e adiciona uma condição para editar a tarefa */}
                 {lista.map(tarefa => (
-                    <li key={tarefa.id}>{tarefa.title}
-                        {/* Adicionando botão de deletar tarefa */}
-                    <button onClick={ () => handleDeletarTarefa(tarefa.id) }>
-                        [x]
-                    </button>
+                    <li key={tarefa.id}>
+                        {tarefa.id === tarefaEditandoId ? (
+                            <input type="text"
+                                   value={salvarTarefaEditada}
+                                   placeholder= {tarefa.title}
+                                   onChange={e => setSalvarTarefaEditada(e.target.value)}
+                             />
+                            ) :
+                            (<>
+                                    {tarefa.title}
+                                    <button className='button' onClick={ () => setTarefaEditandoId(tarefa.id) }>
+                                        Editar
+                                    </button>
+                                    <button className='button' onClick={ () => handleDeletarTarefa(tarefa.id) }>
+                                        Remover
+                                    </button>
+                             </>
+                            )}
                     </li>
                 ))}
             </ul>
