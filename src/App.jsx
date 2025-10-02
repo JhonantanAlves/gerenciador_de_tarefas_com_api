@@ -117,19 +117,19 @@ function ListaTarefas() {
                         {tarefa.id === tarefaEditandoId ? (
                             <input type="text"
                                    value={salvarTarefaEditada}
-                                   placeholder= {tarefa.title}
                                    onChange={e => setSalvarTarefaEditada(e.target.value)}
                              />
-                            ) :
-                            (<>
-                                    {tarefa.title}
-                                    <button className='button' onClick={ () => setTarefaEditandoId(tarefa.id) }>
+                            ) : (
+                                    <>
+                                        {tarefa.title}
+                                        <button className='button' onClick={ () => {setTarefaEditandoId(tarefa.id);
+                                        setSalvarTarefaEditada(tarefa.title) }}>
                                         Editar
-                                    </button>
-                                    <button className='button' onClick={ () => handleDeletarTarefa(tarefa.id) }>
+                                        </button>
+                                        <button className='button' onClick={ () => handleDeletarTarefa(tarefa.id) }>
                                         Remover
-                                    </button>
-                             </>
+                                        </button>
+                                    </>
                             )}
                     </li>
                 ))}
