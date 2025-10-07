@@ -26,6 +26,48 @@ function ListaTarefas() {
         }
     }
 
+    // Função que salva a edição da tarefa (PUT)
+    const handleSalvarEdicao = async (id) => {
+        setLoading(true);
+
+        try {
+            await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: salvarTarefaEditada,
+                    completed: false,
+                    userId: 1,
+                }),
+            });
+
+            // Mapeia a lista e garante que todos os itens sejam retornados
+            const novaLista = lista.map(tarefa => {
+                if (tarefa.id === id) {
+                    // Retorna a tarefa com o título atualizado
+                    return { ...tarefa, title: salvarTarefaEditada };
+                }
+                // Retorna a tarefa original se o ID não for o editado
+                return tarefa;
+            });
+
+            // Atualiza o array de tarefas
+            setLista(novaLista);
+
+            // Desativa o modo de edição
+            setTarefaEditandoId(null);
+
+        } catch (error) {
+            setErro('Falha ao salvar a edição. Tente novamente.');
+            console.error('Erro no PUT:', error);
+        } finally {
+            // Garante que o estado de carregamento seja desativado em qualquer cenário
+            setLoading(false);
+        }
+    }
+
     // Função que lida com o envio do formulário (POST)
     const handleAdicionarTarefa = async (event) => {
         // Impede o recarregamento padrão da página ao submeter o formulário
