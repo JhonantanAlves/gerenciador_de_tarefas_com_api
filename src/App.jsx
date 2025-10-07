@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 function ListaTarefas() {
     const [lista, setLista] = useState([]);
@@ -10,12 +10,12 @@ function ListaTarefas() {
 
 
     // Função que lida com a requisição de deletar tarefa usando metodo (DELETE)
-    const handleDeletarTarefa = async (id) => {
+    const handleRemoverTarefa = async (id) => {
         setLoading(true);
         try {
-             await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`,{
+            await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
                 method: 'DELETE',
-             })
+            })
             const novaLista = lista.filter(tarefa => tarefa.id !== id);
             setLista(novaLista);
         } catch (error) {
@@ -28,7 +28,7 @@ function ListaTarefas() {
 
     // Função que lida com o envio do formulário (POST)
     const handleAdicionarTarefa = async (event) => {
-        // ESSENCIAL: Impede o recarregamento padrão da página ao submeter o formulário
+        // Impede o recarregamento padrão da página ao submeter o formulário
         event.preventDefault();
 
         if (novaTarefaTexto.trim() === '') {
@@ -115,22 +115,40 @@ function ListaTarefas() {
                 {lista.map(tarefa => (
                     <li key={tarefa.id}>
                         {tarefa.id === tarefaEditandoId ? (
-                            <input type="text"
-                                   value={salvarTarefaEditada}
-                                   onChange={e => setSalvarTarefaEditada(e.target.value)}
-                             />
-                            ) : (
-                                    <>
-                                        {tarefa.title}
-                                        <button className='button' onClick={ () => {setTarefaEditandoId(tarefa.id);
-                                        setSalvarTarefaEditada(tarefa.title) }}>
-                                        Editar
-                                        </button>
-                                        <button className='button' onClick={ () => handleDeletarTarefa(tarefa.id) }>
-                                        Remover
-                                        </button>
-                                    </>
-                            )}
+                            // MODO DE EDIÇÃO
+                            <>
+                                <input
+                                    type="text"
+                                    value={salvarTarefaEditada}
+                                    onChange={e => setSalvarTarefaEditada(e.target.value)}
+                                />
+                                {/* BOTÕES DE AÇÃO NA EDIÇÃO */}
+                                <button
+                                    onClick={() => handleSalvarEdicao(tarefa.id)} // Função para salvar a edição
+                                >
+                                    Salvar
+                                </button>
+                                <button
+                                    onClick={() => setTarefaEditandoId(null)} // Limpa o estado e volta para visualização
+                                >
+                                    Cancelar
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                {tarefa.title}
+                                <button onClick={() => {
+                                    // Executa as duas funções em sequência
+                                    setTarefaEditandoId(tarefa.id);
+                                    setSalvarTarefaEditada(tarefa.title);
+                                }}>
+                                    Editar
+                                </button>
+                                <button onClick={() => handleRemoverTarefa(tarefa.id)}>
+                                    Remover
+                                </button>
+                            </>
+                        )}
                     </li>
                 ))}
             </ul>
