@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import ListaTarefas from "../App.jsx";
 
 export const useTarefas = () => {
     const [lista, setLista] = useState([]);
