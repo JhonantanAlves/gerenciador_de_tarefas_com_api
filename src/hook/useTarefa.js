@@ -8,7 +8,6 @@ export const useTarefas = () => {
     const [tarefaEditandoId, setTarefaEditandoId] = useState(null); // Estado para controlar qual tarefa está sendo editada
     const [salvarTarefaEditada, setSalvarTarefaEditada] = useState(''); // Estado para o texto da tarefa editada
 
-
     // Função que lida com a requisição de deletar tarefa usando metodo (DELETE)
     const handleDeletarTarefa = async (id) => {
         setLoading(true);
@@ -140,5 +139,3 @@ export const useTarefas = () => {
         handleSalvarEdicao
     }
 }
-
-export default useTarefas;
